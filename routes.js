@@ -2,6 +2,7 @@
 
 import React, {PropTypes} from 'react';
 import {Link, Route, IndexRoute} from 'react-router';
+import {init} from 'leancloud-storage';
 
 const App = ({children}) => {
   return (
@@ -14,6 +15,10 @@ const App = ({children}) => {
 App.propTypes = {
   children: PropTypes.node.isRequired
 };
+const appId = 'n6eK5jTS0fmkSTKJgUu4UDFX-gzGzoHsz';
+const appKey = 'UJKmvhT1igk8PQHQjXI5xRQp';
+
+init({appId, appKey});
 
 const Hello = () => {
   return (
