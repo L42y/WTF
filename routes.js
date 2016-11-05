@@ -1,24 +1,15 @@
 'use strict';
 
-import React, {PropTypes} from 'react';
+import React from 'react';
 import {Link, Route, IndexRoute} from 'react-router';
 import {init} from 'leancloud-storage';
 
-const App = ({children}) => {
-  return (
-    <div>
-      {children}
-    </div>
-  );
-};
-
-App.propTypes = {
-  children: PropTypes.node.isRequired
-};
 const appId = 'n6eK5jTS0fmkSTKJgUu4UDFX-gzGzoHsz';
 const appKey = 'UJKmvhT1igk8PQHQjXI5xRQp';
 
 init({appId, appKey});
+
+import App from './Components';
 
 const Hello = () => {
   return (
