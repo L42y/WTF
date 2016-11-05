@@ -1,6 +1,7 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
+import {Col} from 'jsxstyle';
 
 export default class App extends React.Component {
   static propTypes = {
@@ -11,7 +12,9 @@ export default class App extends React.Component {
     const {children} = this.props;
 
     return (
-      <div>{children}</div>
+      <Col minHeight="100vh">
+        {children}
+      </Col>
     );
   }
 }
