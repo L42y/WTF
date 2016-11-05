@@ -10,6 +10,7 @@ const appKey = 'UJKmvhT1igk8PQHQjXI5xRQp';
 init({appId, appKey});
 
 import App from './Components';
+import Session from './Components/Session';
 
 const Hello = () => {
   return (
@@ -31,6 +32,8 @@ const routes = (
     <IndexRoute component={Hello}/>
     <Route path="world"
            component={World}/>
+    <Route path="login"
+           component={Session}/>
   </Route>
 );
 
