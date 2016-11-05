@@ -24,6 +24,10 @@ server.connection({
 });
 
 const generateTemplate = ({title, markup}) => {
+  const bodyStyle = {
+    margin: 0
+  };
+
   const html = renderToStaticMarkup(
     <html>
       <head>
@@ -37,7 +41,7 @@ const generateTemplate = ({title, markup}) => {
               content="width=device-width, initial-scale=1"/>
       </head>
 
-      <body>
+      <body style={bodyStyle}>
         <div id="react-root"
              dangerouslySetInnerHTML={{__html: markup}}>
         </div>
