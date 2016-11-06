@@ -3,9 +3,26 @@
 import React, {PropTypes} from 'react';
 import {Row, Block} from 'jsxstyle';
 import {Link} from 'react-router';
+import {User} from 'leancloud-storage';
 
 export default class Headr extends React.Component {
+  static contextTypes = {
+    user: PropTypes.instanceOf(User)
+  };
+
+  renderUserOrLogin = () => {
+    const {user} = this.context;
+
+    return user ? (
+      <Link to={`/@${user.getUsername()}`}>@{user.getUsername()}</Link>
+    ) : (
+      <Link to="/login">Login</Link>
+    );
+  }
+
   render() {
+    const {user} = this.context;
+
     return (
       <Row height={60}
            padding="0 15px"
@@ -16,7 +33,7 @@ export default class Headr extends React.Component {
         </Block>
 
         <Block>
-          <Link to="/login">Login</Link>
+          {this.renderUserOrLogin()}
         </Block>
       </Row>
     );
