@@ -11,6 +11,7 @@ init({appId, appKey});
 
 import App from './Components';
 import Session from './Components/Session';
+import Profile from './Components/Profile';
 
 const Hello = () => {
   return (
@@ -34,6 +35,8 @@ const routes = (
            component={World}/>
     <Route path="login"
            component={Session}/>
+    <Route path="@:username"
+           component={Profile}/>
   </Route>
 );
 
