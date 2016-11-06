@@ -67,7 +67,7 @@ server.route({
         const markup = renderToString(<RouterContext {...renderProps}/>);
 
         return reply(generateTemplate({
-          title: 'Frontend',
+          title: '前端',
           markup
         }));
       } else {
