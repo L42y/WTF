@@ -20,7 +20,7 @@ const server = new Server({
 
 server.connection({
   host: '0.0.0.0',
-  port: process.env.PORT || 4444
+  port: process.env.LEANCLOUD_APP_PORT || process.env.PORT || 4444
 });
 
 const generateTemplate = ({title, markup}) => {
