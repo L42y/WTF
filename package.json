@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "NODE_ENV=development concurrently 'nodemon ./tmp/server/server.bundle.js' 'webpack -w --debug'",
     "start": "NODE_ENV=production node tmp/server/server.bundle.js",
-    "postinstall": "NODE_ENV=production webpack -p",
+    "prepublish": "NODE_ENV=production node_modules/.bin/webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "L42y",
