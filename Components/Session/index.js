@@ -89,6 +89,7 @@ export default class Session extends React.Component {
     const {code, number, isSubmitDisabled, requestingCodePause} = this.state;
     const isWaitingForCode = requestingCodePause > 0 && requestingCodePause <= 60;
     const isNumberInputDisabled = requestingCodePause > 0 && requestingCodePause <= 61;
+    const isRequestingCodeDisabled = requestingCodePause > 0;
 
     return (
       <Col flex={1}
@@ -112,7 +113,7 @@ export default class Session extends React.Component {
                    onChange={this.onInputChange}
                    placeholder="mobile phone number"/>
 
-            <button disabled={requestingCodePause > 0}
+            <button disabled={isRequestingCodeDisabled}
                     onClick={this.onRequestCode}>
               Get code
               {isWaitingForCode ? ` in ${requestingCodePause}s` : ''}
