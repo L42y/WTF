@@ -1,7 +1,7 @@
 'use strict';
 
 import React, {PropTypes} from 'react';
-import {Col, Row} from 'jsxstyle';
+import {Col, Row, Block} from 'jsxstyle';
 import {Cloud, User} from 'leancloud-storage';
 
 export default class Session extends React.Component {
@@ -10,10 +10,13 @@ export default class Session extends React.Component {
   };
 
   state = {
+    using: 'password',
     code: '',
     number: '',
+    password: '',
     isSubmitDisabled: true,
-    requestingCodePause: Infinity
+    requestingCodePause: Infinity,
+    isPasswordLoginDisabled: true
   };
 
   componentWillUnmount() {
@@ -28,6 +31,18 @@ export default class Session extends React.Component {
 
   setNumberRef = (ref) => {
     this._number = ref;
+  }
+
+  setPasswordRef = (ref) => {
+    this._password = ref;
+  }
+
+  onUsingChange = (event) => {
+    const {value} = event.target;
+
+    this.setState({
+      using: value
+    });
   }
 
   onRequestCode = () => {
@@ -64,7 +79,8 @@ export default class Session extends React.Component {
 
     this.setState({
       [name]: value,
-      isSubmitDisabled: !(this._number.checkValidity() && this._code.checkValidity())
+      isSubmitDisabled: !(this._number.checkValidity() && this._code.checkValidity()),
+      isPasswordLoginDisabled: !(this._number.checkValidity() && this._password.checkValidity())
     });
 
     if (name === 'number') {
@@ -74,22 +90,68 @@ export default class Session extends React.Component {
     }
   }
 
-  onSubmit = (event) => {
+  onLoginByCode = (event) => {
     event.preventDefault();
 
     const {code, number} = this.state;
 
     User.signUpOrlogInWithMobilePhone(number.toString(), code.toString())
-      .then(() => {
-        this.context.router.push('/');
-      });
+      .then(this.onLoginSucceed);
   };
 
+  onLoginByPassword = (event) => {
+    event.preventDefault();
+
+    const {number, password} = this.state;
+
+    User.logInWithMobilePhone(number.toString(), password.toString())
+      .then(this.onLoginSucceed);
+  }
+
+  onLoginSucceed = (response) => {
+    const {id, _sessionToken: token} = response;
+
+    fetch('/api/session', {
+      body: JSON.stringify({id, token}),
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'same-origin'
+    });
+
+    this.context.router.push('/');
+  }
+
   render() {
-    const {code, number, isSubmitDisabled, requestingCodePause} = this.state;
+    const {
+      using,
+      code,
+      number,
+      password,
+      isSubmitDisabled,
+      isPasswordLoginDisabled,
+      requestingCodePause
+    } = this.state;
+
     const isWaitingForCode = requestingCodePause > 0 && requestingCodePause <= 60;
     const isNumberInputDisabled = requestingCodePause > 0 && requestingCodePause <= 61;
     const isRequestingCodeDisabled = requestingCodePause > 0;
+
+    const isUsingCode = using === 'code';
+    const isUsingPassword = using === 'password';
+    const numberInput = (
+      <input ref={this.setNumberRef}
+             name="number"
+             type="text"
+             value={number}
+             pattern="^1[345678][0-9]{9}$"
+             required={true}
+             disabled={isNumberInputDisabled}
+             onChange={this.onInputChange}
+             placeholder="mobile phone number"/>
+    );
 
     return (
       <Col flex={1}
@@ -97,21 +159,71 @@ export default class Session extends React.Component {
            padding="0 15px"
            maxWidth={600}
            justifyContent="center">
-        <h1>Login</h1>
+        <Row alignItems="center"
+             marginBottom={10}>
+          <Block margin="0"
+                 component="h1">
+            Login
+          </Block>
 
-        <form onSubmit={this.onSubmit}>
+          <Block margin="0 5px">with:</Block>
+
+          <Block component="label"
+                 marginRight={5}>
+
+            <input name="using"
+                   type="radio"
+                   value="password"
+                   checked={using === 'password'}
+                   onChange={this.onUsingChange}/>
+
+            password
+          </Block>
+
+          <Block component="label">
+            <input name="using"
+                   type="radio"
+                   value="code"
+                   checked={using === 'code'}
+                   onChange={this.onUsingChange}/>
+
+            SMS code
+          </Block>
+        </Row>
+
+        <Block props={{onSubmit: this.onLoginByPassword}}
+               display={isUsingPassword ? null : 'none'}
+               component="form">
+          <Row marginBottom={10}>
+            {numberInput}
+          </Row>
+
+          <Row marginBottom={10}>
+            <input ref={this.setPasswordRef}
+                   name="password"
+                   type="password"
+                   value={password}
+                   required={true}
+                   onChange={this.onInputChange}
+                   minLength={6}
+                   maxLength={64}
+                   placeholder="password"/>
+          </Row>
+
+
+          <button type="submit"
+                  disabled={isPasswordLoginDisabled}>
+            Login
+          </button>
+        </Block>
+
+        <Block props={{onSubmit: this.onLoginByCode}}
+               display={isUsingCode ? null : 'none'}
+               component="form">
           <Row width={250}
                marginBottom={10}
                justifyContent="space-between">
-            <input ref={this.setNumberRef}
-                   name="number"
-                   type="text"
-                   value={number}
-                   pattern="^1[345678][0-9]{9}$"
-                   required={true}
-                   disabled={isNumberInputDisabled}
-                   onChange={this.onInputChange}
-                   placeholder="mobile phone number"/>
+            {numberInput}
 
             <button disabled={isRequestingCodeDisabled}
                     onClick={this.onRequestCode}>
@@ -134,7 +246,7 @@ export default class Session extends React.Component {
                   disabled={isSubmitDisabled}>
             Submit
           </button>
-        </form>
+        </Block>
       </Col>
     );
   }
