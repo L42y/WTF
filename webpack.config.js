@@ -1,12 +1,18 @@
 'use strict';
 
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
 const commonLoaders = [{
   test: /\.js$/,
   query: {
     presets: ['react', 'es2015', 'stage-2']
   },
-  loader: 'babel'
+  loader: 'babel-loader'
 }];
+
+const commonPlugins = [
+  new ExtractTextPlugin('web.bundle.css')
+];
 
 module.exports = [{
   name: 'client-side',
@@ -17,8 +23,12 @@ module.exports = [{
     filename: 'web.bundle.js'
   },
   module: {
-    loaders: commonLoaders
+    loaders: commonLoaders.concat([{
+      test: /\.css$/,
+      loader: ExtractTextPlugin.extract('css-loader?sourceMap')
+    }])
   },
+  plugins: commonPlugins,
   devtool: 'source-map'
 }, {
   name: 'server-side rendering',
@@ -31,8 +41,12 @@ module.exports = [{
     libraryTarget: 'commonjs2'
   },
   module: {
-    loaders: commonLoaders
+    loaders: commonLoaders.concat([{
+      test: /\.css$/,
+      loader: 'css-loader/locals'
+    }])
   },
+  plugins: commonPlugins,
   devtool: 'source-map',
   externals: /^[a-z\/\-0-9]+$/
 }];
