@@ -4,7 +4,7 @@ import React, {PropTypes} from 'react';
 import {Row, Block} from 'jsxstyle';
 import {Link} from 'react-router';
 
-export default class Headr extends React.Component {
+export default class Header extends React.Component {
   static contextTypes = {
     user: PropTypes.object
   };
