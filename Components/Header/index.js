@@ -3,7 +3,6 @@
 import React, {PropTypes} from 'react';
 import {Row, Block} from 'jsxstyle';
 import {Link} from 'react-router';
-import {User} from 'leancloud-storage';
 
 export default class Headr extends React.Component {
   static contextTypes = {

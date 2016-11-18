@@ -2,7 +2,6 @@
 
 import React, {PropTypes} from 'react';
 import {Col} from 'jsxstyle';
-import {User} from 'leancloud-storage';
 
 import Header from './Header';
 
