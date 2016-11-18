@@ -7,7 +7,7 @@ import {User} from 'leancloud-storage';
 
 export default class Headr extends React.Component {
   static contextTypes = {
-    user: PropTypes.instanceOf(User)
+    user: PropTypes.object
   };
 
   renderUserOrLogin = () => {

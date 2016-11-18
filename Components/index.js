@@ -12,13 +12,13 @@ export default class App extends React.Component {
   };
 
   static childContextTypes = {
-    user: PropTypes.instanceOf(User)
+    user: PropTypes.object
   };
 
   getChildContext() {
-    return {
-      user: User.current()
-    };
+    const {user} = this.props;
+
+    return {user};
   }
 
   render() {

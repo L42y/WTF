@@ -3,9 +3,24 @@
 import {Server} from 'hapi';
 import {badImplementation, notFound} from 'boom';
 import Inert from 'inert';
+import Cookie from 'hapi-auth-cookie';
 import React from 'react';
 import {renderToString, renderToStaticMarkup} from 'react-dom/server';
 import {match, RouterContext} from 'react-router';
+import {init, Cloud} from 'leanengine';
+
+import {fetchUserBySessionToken} from './utils';
+
+init({
+  appId: process.env.LEANCLOUD_APP_ID,
+  appKey: process.env.LEANCLOUD_APP_KEY,
+  masterKey: process.env.LEANCLOUD_APP_MASTER_KEY
+});
+
+Cloud.useMasterKey();
+
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 import routes from './routes.js';
 
@@ -54,33 +69,18 @@ const generateTemplate = ({title, markup}) => {
   return `<!doctype html>${html}`;
 };
 
-server.route({
-  path: '/{params*}',
-  method: 'GET',
-  handler: function(request, reply) {
-    match({routes, location: request.url.href}, (error, redirectLocation, renderProps) => {
-      if (error) {
-        return reply(badImplementation(error.message));
-      } else if (redirectLocation) {
-        return reply.redirect(redirectLocation.pathname + redirectLocation.search);
-      } else if (renderProps) {
-        const markup = renderToString(<RouterContext {...renderProps}/>);
-
-        return reply(generateTemplate({
-          title: '前端',
-          markup
-        }));
-      } else {
-        return reply(notFound());
-      }
-    });
-  }
-});
-
-server.register(Inert, (err) => {
+server.register([Inert, Cookie], (err) => {
   if (err) {
-    console.error('Failed to load module `inert`');
+    console.error('Failed to register plugins', err);
   } else {
+    server.auth.strategy('leancloud', 'cookie', 'try', {
+      cookie: 'leancloud',
+      password: isProduction ?
+        process.env.WTF_LEANCLOUD_COOKIE_PASSWORD :
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+      isSecure: isProduction
+    });
+
     server.route([{
       path: '/favicon.ico',
       method: 'GET',
@@ -104,6 +104,70 @@ server.register(Inert, (err) => {
         directory: {
           path: 'tmp/web'
         }
+      }
+    }, {
+      path: '/api/session',
+      config: {
+        auth: {
+          mode: 'try',
+          strategy: 'leancloud'
+        }
+      },
+      method: 'POST',
+      handler: require('./api/session').post
+    }, {
+      path: '/api/session',
+      config: {
+        auth: 'leancloud'
+      },
+      method: 'DELETE',
+      handler: require('./api/session').delete
+    }, {
+      path: '/{params*}',
+      config: {
+        auth: {
+          mode: 'try',
+          strategy: 'leancloud'
+        }
+      },
+      method: 'GET',
+      handler: function(request, reply) {
+        match({routes, location: request.url.href}, (error, redirectLocation, renderProps) => {
+          if (error) {
+            return reply(badImplementation(error.message));
+          } else if (redirectLocation) {
+            return reply.redirect(redirectLocation.pathname + redirectLocation.search);
+          } else if (renderProps) {
+            if (request.auth.isAuthenticated) {
+              const {token} = request.auth.credentials;
+
+              return fetchUserBySessionToken(token)
+                .then((user) => {
+                  const createElement = (Component, props) => {
+                    return <Component {...props} user={user}/>;
+                  };
+                  const markup = renderToString(
+                    <RouterContext {...renderProps}
+                                   createElement={createElement}/>
+                  );
+
+                  reply(generateTemplate({
+                    title: '前端',
+                    markup
+                  }));
+                });
+            } else {
+              const markup = renderToString(<RouterContext {...renderProps}/>);
+
+              return reply(generateTemplate({
+                title: '前端',
+                markup
+              }));
+            }
+          } else {
+            return reply(notFound());
+          }
+        });
       }
     }]);
 
