@@ -54,6 +54,8 @@ const generateTemplate = ({title, markup}) => {
               content=""/>
         <meta name="viewport"
               content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet"
+              href="/!/web.bundle.css"/>
       </head>
 
       <body style={bodyStyle}>
