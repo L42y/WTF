@@ -13,7 +13,13 @@ export default class Header extends React.Component {
     const {user} = this.context;
 
     return user ? (
-      <Link to={`/@${user.getUsername()}`}>@{user.getUsername()}</Link>
+      <Row>
+        <Block marginRight={15}>
+          <Link to="/create">Create</Link>
+        </Block>
+
+        <Link to={`/@${user.getUsername()}`}>@{user.getUsername()}</Link>
+      </Row>
     ) : (
       <Link to="/login">Login</Link>
     );

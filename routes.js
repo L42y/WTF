@@ -10,6 +10,7 @@ const appKey = 'UJKmvhT1igk8PQHQjXI5xRQp';
 init({appId, appKey});
 
 import App from './Components';
+import Create from './Components/Post/Create';
 import Session from './Components/Session';
 import Profile from './Components/Profile';
 import PostItem from './Components/Post/Item';
@@ -34,6 +35,8 @@ const routes = (
     <IndexRoute component={Hello}/>
     <Route path="world"
            component={World}/>
+    <Route path="create"
+           component={Create}/>
     <Route path="login"
            component={Session}/>
     <Route path="@:username"
