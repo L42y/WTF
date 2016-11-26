@@ -5,7 +5,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const commonLoaders = [{
   test: /\.js$/,
   query: {
-    presets: ['react', 'es2015', 'stage-2']
+    presets: ['react', 'es2015', 'stage-0']
   },
   loader: 'babel-loader'
 }];
