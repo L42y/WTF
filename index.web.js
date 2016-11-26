@@ -3,14 +3,13 @@
 import React from 'react';
 import {render} from 'react-dom';
 import {Router, browserHistory} from 'react-router';
-import {User} from 'leancloud-storage';
 
 import routes from './routes.js';
 
 const createElement = (Component, props) => {
-  const user = User.current();
+  const extraProps = JSON.parse(window.__wtfDataJSON);
 
-  return <Component {...props} user={user}/>;
+  return <Component {...props} {...extraProps}/>;
 };
 
 render((

@@ -38,10 +38,13 @@ server.connection({
   port: process.env.LEANCLOUD_APP_PORT || process.env.PORT || 4444
 });
 
-const generateTemplate = ({title, markup}) => {
+const generateTemplate = ({data, title, markup}) => {
   const bodyStyle = {
     margin: 0
   };
+
+  const wtfDataJSON = JSON.stringify(data || null);
+  const __html = `window.__wtfDataJSON = '${wtfDataJSON}'`;
 
   const html = renderToStaticMarkup(
     <html>
@@ -63,6 +66,7 @@ const generateTemplate = ({title, markup}) => {
              dangerouslySetInnerHTML={{__html: markup}}>
         </div>
 
+        <script dangerouslySetInnerHTML={{__html}}/>
         <script src="/!/web.bundle.js"></script>
       </body>
     </html>
@@ -145,8 +149,10 @@ server.register([Inert, Cookie], (err) => {
 
               return fetchUserBySessionToken(token)
                 .then((user) => {
+                  const parsedUser = JSON.parse(JSON.stringify(user));
+                  const extraProps = {user: parsedUser};
                   const createElement = (Component, props) => {
-                    return <Component {...props} user={user}/>;
+                    return <Component {...props} {...extraProps}/>;
                   };
                   const markup = renderToString(
                     <RouterContext {...renderProps}
@@ -154,6 +160,7 @@ server.register([Inert, Cookie], (err) => {
                   );
 
                   reply(generateTemplate({
+                    data: {user},
                     title: '前端',
                     markup
                   }));

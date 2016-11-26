@@ -18,7 +18,7 @@ export default class Header extends React.Component {
           <Link to="/create">Create</Link>
         </Block>
 
-        <Link to={`/@${user.getUsername()}`}>@{user.getUsername()}</Link>
+        <Link to={`/@${user.username}`}>@{user.username}</Link>
       </Row>
     ) : (
       <Link to="/login">Login</Link>
