@@ -12,6 +12,7 @@ init({appId, appKey});
 import App from './Components';
 import Session from './Components/Session';
 import Profile from './Components/Profile';
+import PostItem from './Components/Post/Item';
 
 const Hello = () => {
   return (
@@ -37,6 +38,8 @@ const routes = (
            component={Session}/>
     <Route path="@:username"
            component={Profile}/>
+    <Route path="@:username/:id"
+           component={PostItem}/>
   </Route>
 );
 
