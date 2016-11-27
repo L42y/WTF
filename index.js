@@ -75,6 +75,43 @@ const generateTemplate = ({data, title, markup}) => {
   return `<!doctype html>${html}`;
 };
 
+const handleSuccessRequest = (request, reply, renderProps) => {
+  if (request.auth.isAuthenticated) {
+    const {token} = request.auth.credentials;
+
+    fetchUserBySessionToken(token)
+      .then((user) => {
+        const parsedUser = JSON.parse(JSON.stringify(user));
+        const extraProps = {user: parsedUser};
+
+        const createElement = (Component, props) => {
+          return <Component {...props} {...extraProps}/>;
+        };
+
+        const markup = renderToString(
+          <RouterContext {...renderProps}
+                         createElement={createElement}/>
+        );
+
+        reply(generateTemplate({
+          data: {user},
+          title: '前端',
+          markup
+        }));
+      })
+      .catch((error) => {
+        reply(badImplementation(error.message, error));
+      });
+  } else {
+    const markup = renderToString(<RouterContext {...renderProps}/>);
+
+    reply(generateTemplate({
+      title: '前端',
+      markup
+    }));
+  }
+};
+
 server.register([Inert, Cookie], (err) => {
   if (err) {
     console.error('Failed to register plugins', err);
@@ -144,35 +181,7 @@ server.register([Inert, Cookie], (err) => {
           } else if (redirectLocation) {
             return reply.redirect(redirectLocation.pathname + redirectLocation.search);
           } else if (renderProps) {
-            if (request.auth.isAuthenticated) {
-              const {token} = request.auth.credentials;
-
-              return fetchUserBySessionToken(token)
-                .then((user) => {
-                  const parsedUser = JSON.parse(JSON.stringify(user));
-                  const extraProps = {user: parsedUser};
-                  const createElement = (Component, props) => {
-                    return <Component {...props} {...extraProps}/>;
-                  };
-                  const markup = renderToString(
-                    <RouterContext {...renderProps}
-                                   createElement={createElement}/>
-                  );
-
-                  reply(generateTemplate({
-                    data: {user},
-                    title: '前端',
-                    markup
-                  }));
-                });
-            } else {
-              const markup = renderToString(<RouterContext {...renderProps}/>);
-
-              return reply(generateTemplate({
-                title: '前端',
-                markup
-              }));
-            }
+            return handleSuccessRequest(request, reply, renderProps);
           } else {
             return reply(notFound());
           }
