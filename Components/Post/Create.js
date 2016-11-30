@@ -31,9 +31,13 @@ export default class Create extends Component {
         const {user, router} = this.context;
         post.set('contentState', contentState);
         post.set('user', user);
+
+        const _user = AVObject.createWithoutData('_User', user.objectId);
+        post.set('user', _user);
+
         post.save()
           .then(({id}) => {
-            const username = user.get('username');
+            const username = user.username;
 
             router.push(`/@${username}/${id}`);
           })
