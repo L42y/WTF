@@ -24,6 +24,9 @@ module.exports = [{
     loaders: commonLoaders.concat([{
       test: /\.css$/,
       loader: ExtractTextPlugin.extract('css-loader?sourceMap')
+    }, {
+      test: /\.json$/,
+      loader: 'json-loader'
     }])
   },
   plugins: commonPlugins,
