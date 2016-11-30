@@ -43,8 +43,14 @@ const generateTemplate = ({data, title, markup}) => {
     margin: 0
   };
 
-  const wtfDataJSON = JSON.stringify(data || null);
-  const __html = `window.__wtfDataJSON = '${wtfDataJSON}'`;
+  const scripts = Object.keys(data).map((key) => {
+    const string = JSON.stringify(data[key]);
+    const __html = `window.${key} = '${string}'`;
+
+    return (
+      <script key={key} dangerouslySetInnerHTML={{__html}}/>
+    );
+  });
 
   const html = renderToStaticMarkup(
     <html>
@@ -66,7 +72,7 @@ const generateTemplate = ({data, title, markup}) => {
              dangerouslySetInnerHTML={{__html: markup}}>
         </div>
 
-        <script dangerouslySetInnerHTML={{__html}}/>
+        {scripts}
         <script src="/!/web.bundle.js"></script>
       </body>
     </html>
@@ -75,41 +81,74 @@ const generateTemplate = ({data, title, markup}) => {
   return `<!doctype html>${html}`;
 };
 
-const handleSuccessRequest = (request, reply, renderProps) => {
+const handleSuccessRequest = async (request, reply, renderProps) => {
+  // get all necessary props can only pass from server
+  const serverProps = {};
   if (request.auth.isAuthenticated) {
+    let response;
+
     const {token} = request.auth.credentials;
 
-    fetchUserBySessionToken(token)
-      .then((user) => {
-        const parsedUser = JSON.parse(JSON.stringify(user));
-        const extraProps = {user: parsedUser};
+    try {
+      response = await fetchUserBySessionToken(token);
+    } catch (error) {
+      throw error;
+    }
 
-        const createElement = (Component, props) => {
-          return <Component {...props} {...extraProps}/>;
-        };
+    const user = JSON.parse(JSON.stringify(response));
 
-        const markup = renderToString(
-          <RouterContext {...renderProps}
-                         createElement={createElement}/>
-        );
-
-        reply(generateTemplate({
-          data: {user},
-          title: '前端',
-          markup
-        }));
-      })
-      .catch((error) => {
-        reply(badImplementation(error.message, error));
-      });
-  } else {
-    const markup = renderToString(<RouterContext {...renderProps}/>);
-
-    reply(generateTemplate({
-      title: '前端',
-      markup
-    }));
+    serverProps.user = user;
   }
+
+  const promises = [];
+  const components = [];
+  const initialPropsMap = new Map();
+  const {params} = renderProps;
+  renderProps.components.forEach((component) => {
+    const {getInitialProps} = component;
+
+    if (getInitialProps) {
+      promises.push(getInitialProps({
+        params
+      }));
+      components.push(component);
+    }
+  });
+
+  if (components.length > 0 && promises.length > 0) {
+    const asyncs = await Promise.all(promises);
+
+    asyncs.forEach((props, index) => {
+      initialPropsMap.set(components[index], props);
+    });
+  }
+
+  const createElement = (Component, props) => {
+    const componentProps = initialPropsMap.get(Component);
+
+    return <Component {...props} {...serverProps} {...componentProps}/>;
+  };
+
+  const markup = renderToString(
+    <RouterContext {...renderProps}
+                   createElement={createElement}/>
+  );
+
+  let initialProps = {};
+  initialPropsMap.forEach((props) => {
+    initialProps = {...initialProps, ...props};
+  });
+
+  reply(generateTemplate({
+    data: {
+      __serverDataJSON: serverProps,
+      __initialDataJSON: initialProps
+    },
+    title: '前端',
+    markup
+  }));
+
+  initialPropsMap.clear();
 };
 
 server.register([Inert, Cookie], (err) => {
@@ -174,14 +213,14 @@ server.register([Inert, Cookie], (err) => {
         }
       },
       method: 'GET',
-      handler: function(request, reply) {
-        match({routes, location: request.url.href}, (error, redirectLocation, renderProps) => {
+      handler: (request, reply) => {
+        match({routes, location: request.url.href}, async (error, redirectLocation, renderProps) => {
           if (error) {
             return reply(badImplementation(error.message));
           } else if (redirectLocation) {
             return reply.redirect(redirectLocation.pathname + redirectLocation.search);
           } else if (renderProps) {
-            return handleSuccessRequest(request, reply, renderProps);
+            return await handleSuccessRequest(request, reply, renderProps);
           } else {
             return reply(notFound());
           }
