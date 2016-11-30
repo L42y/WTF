@@ -10,31 +10,16 @@ const appKey = 'UJKmvhT1igk8PQHQjXI5xRQp';
 init({appId, appKey});
 
 import App from './Components';
+import Home from './Components/Home';
 import Create from './Components/Post/Create';
 import Session from './Components/Session';
 import Profile from './Components/Profile';
 import PostItem from './Components/Post/Item';
 
-const Hello = () => {
-  return (
-    <div>
-      Hello, <Link to="/world">World!</Link>
-    </div>
-  );
-};
-
-const World = () => {
-  return (
-    <div>Hola</div>
-  );
-};
-
 const routes = (
   <Route path="/"
          component={App}>
-    <IndexRoute component={Hello}/>
-    <Route path="world"
-           component={World}/>
+    <IndexRoute component={Home}/>
     <Route path="create"
            component={Create}/>
     <Route path="login"
