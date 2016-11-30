@@ -4,7 +4,7 @@ import 'draft-js/dist/Draft.css';
 
 import React, {Component, PropTypes} from 'react';
 import {Col, Block} from 'jsxstyle';
-import {Editor, EditorState} from 'draft-js';
+import {Editor, EditorState, convertToRaw} from 'draft-js';
 import {Object as AVObject} from 'leancloud-storage';
 
 const Post = AVObject.extend('Post');
@@ -29,8 +29,7 @@ export default class Create extends Component {
         const post = new Post();
 
         const {user, router} = this.context;
-        post.set('contentState', contentState);
-        post.set('user', user);
+        post.set('contentState', convertToRaw(contentState));
 
         const _user = AVObject.createWithoutData('_User', user.objectId);
         post.set('user', _user);
