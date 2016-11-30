@@ -29,8 +29,6 @@ export default class Create extends Component {
         const post = new Post();
 
         const {user, router} = this.context;
-        const text = contentState.getPlainText();
-        console.log(text.split('\n'));
         post.set('contentState', contentState);
         post.set('user', user);
         post.save()
