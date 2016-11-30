@@ -2,7 +2,7 @@
 
 import './Item.css';
 
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {Col} from 'jsxstyle';
 import {Query} from 'leancloud-storage';
 import sanitizeHtml from 'sanitize-html';
@@ -10,6 +10,10 @@ import {convertFromRaw} from 'draft-js';
 import {stateToHTML} from 'draft-js-export-html';
 
 export default class Item extends Component {
+  static propTypes = {
+    post: PropTypes.object.isRequired
+  };
+
   static getInitialProps = ({params}) => {
     const {id} = params;
     const _Post = new Query('Post');
