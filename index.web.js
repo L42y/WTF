@@ -28,10 +28,10 @@ render((
           createElement={createElement}>
     {routes}
   </Router>
-), document.getElementById('react-root'));
-
-// purge `initialProps` data which pass from server
-// after initial client-side rendering
-if (window.__initialDataJSON) {
-  window.__initialDataJSON = null;
-}
+), document.getElementById('react-root'), () => {
+  // purge `initialProps` data which pass from server
+  // after initial client-side rendering
+  if (window.__initialDataJSON) {
+    window.__initialDataJSON = null;
+  }
+});
