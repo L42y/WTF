@@ -1,6 +1,9 @@
 'use strict';
 
+const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const isProduction = process.env['NODE_ENV'] === 'production';
 
 const commonLoaders = [{
   test: /\.js$/,
@@ -29,7 +32,16 @@ module.exports = [{
       loader: 'json-loader'
     }])
   },
-  plugins: commonPlugins,
+  plugins: commonPlugins.concat(isProduction ? [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.OccurrenceOrderPlugin(true),
+    new webpack.optimize.UglifyJsPlugin()
+  ] : []),
   devtool: 'source-map'
 }, {
   name: 'server-side rendering',
