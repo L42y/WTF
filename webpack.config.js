@@ -9,6 +9,9 @@ const commonLoaders = [{
   test: /\.js$/,
   loader: 'babel-loader',
   exclude: /node_modules/
+}, {
+  test: /\.jpg$/,
+  loader: 'file-loader'
 }];
 
 const commonPlugins = [
@@ -21,7 +24,8 @@ module.exports = [{
   entry: './index.web',
   output: {
     path: './tmp/web',
-    filename: 'web.bundle.js'
+    filename: 'web.bundle.js',
+    publicPath: '/_/'
   },
   module: {
     loaders: commonLoaders.concat([{

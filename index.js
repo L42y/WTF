@@ -64,7 +64,7 @@ const generateTemplate = ({data, title, markup}) => {
         <meta name="viewport"
               content="width=device-width, initial-scale=1"/>
         <link rel="stylesheet"
-              href="/!/web.bundle.css"/>
+              href="/_/web.bundle.css"/>
       </head>
 
       <body style={bodyStyle}>
@@ -73,7 +73,7 @@ const generateTemplate = ({data, title, markup}) => {
         </div>
 
         {scripts}
-        <script src="/!/web.bundle.js"></script>
+        <script src="/_/web.bundle.js"></script>
       </body>
     </html>
   );
@@ -173,14 +173,6 @@ server.register([Inert, Cookie], (err) => {
       }
     }, {
       path: '/_/{param*}',
-      method: 'GET',
-      handler: {
-        directory: {
-          path: 'public'
-        }
-      }
-    }, {
-      path: '/!/{param*}',
       method: 'GET',
       handler: {
         directory: {
