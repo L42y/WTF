@@ -7,7 +7,7 @@ import Header from './Header';
 
 export default class App extends React.Component {
   static propTypes = {
-    user: PropTypes.object.isRequired,
+    user: PropTypes.object,
     children: PropTypes.node.isRequired
   };
 
