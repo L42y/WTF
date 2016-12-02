@@ -8,6 +8,7 @@ import React from 'react';
 import {renderToString, renderToStaticMarkup} from 'react-dom/server';
 import {match, RouterContext} from 'react-router';
 import {init, Cloud} from 'leanengine';
+import serialize from 'serialize-javascript';
 
 import {fetchUserBySessionToken} from './utils';
 
@@ -44,7 +45,7 @@ const generateTemplate = ({data, title, markup}) => {
   };
 
   const scripts = Object.keys(data).map((key) => {
-    const string = JSON.stringify(data[key]);
+    const string = serialize(data[key], {isJSON: true});
     const __html = `window.${key} = '${string}'`;
 
     return (
