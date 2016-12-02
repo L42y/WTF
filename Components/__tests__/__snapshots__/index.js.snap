@@ -1,0 +1,73 @@
+exports[`test <App> renders with user prop 1`] = `
+<div
+  className=" jsxstyle0"
+  style={undefined}>
+  <div
+    className=" jsxstyle1"
+    style={undefined}>
+    <div
+      className=" jsxstyle2"
+      style={undefined}>
+      <a
+        onClick={[Function]}
+        style={Object {}}>
+        Frontend
+      </a>
+    </div>
+    <div
+      className=" jsxstyle3"
+      style={undefined}>
+      <div
+        className=" jsxstyle4"
+        style={undefined}>
+        <div
+          className=" jsxstyle5"
+          style={undefined}>
+          <a
+            onClick={[Function]}
+            style={Object {}}>
+            Create
+          </a>
+        </div>
+        <a
+          onClick={[Function]}
+          style={Object {}}>
+          @
+          L42y
+        </a>
+      </div>
+    </div>
+  </div>
+  test
+</div>
+`;
+
+exports[`test <App> renders without user prop 1`] = `
+<div
+  className=" jsxstyle0"
+  style={undefined}>
+  <div
+    className=" jsxstyle1"
+    style={undefined}>
+    <div
+      className=" jsxstyle2"
+      style={undefined}>
+      <a
+        onClick={[Function]}
+        style={Object {}}>
+        Frontend
+      </a>
+    </div>
+    <div
+      className=" jsxstyle3"
+      style={undefined}>
+      <a
+        onClick={[Function]}
+        style={Object {}}>
+        Login
+      </a>
+    </div>
+  </div>
+  test
+</div>
+`;

@@ -8,7 +8,7 @@
     "dev": "NODE_ENV=development concurrently 'nodemon ./tmp/server/server.bundle.js' 'webpack -w --debug'",
     "start": "NODE_ENV=production node tmp/server/server.bundle.js",
     "prepublish": "NODE_ENV=production node_modules/.bin/webpack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "L42y",
   "dependencies": {
@@ -39,8 +39,11 @@
     "webpack": "^1.13.3"
   },
   "devDependencies": {
+    "babel-jest": "^17.0.2",
     "concurrently": "3.1.0",
-    "nodemon": "^1.11.0"
+    "jest": "^17.0.3",
+    "nodemon": "^1.11.0",
+    "react-test-renderer": "^15.4.1"
   },
   "engines": {
     "node": "7.0.0"
