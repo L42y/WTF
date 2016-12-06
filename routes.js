@@ -4,10 +4,11 @@ import React from 'react';
 import {Link, Route, IndexRoute} from 'react-router';
 import {init} from 'leancloud-storage';
 
-const appId = 'n6eK5jTS0fmkSTKJgUu4UDFX-gzGzoHsz';
-const appKey = 'UJKmvhT1igk8PQHQjXI5xRQp';
+const appId = process.env.LEANCLOUD_APP_ID;
+const appKey = process.env.LEANCLOUD_APP_KEY;
+const region = process.env.LEANCLOUD_REGION;
 
-init({appId, appKey});
+init({appId, appKey, region});
 
 import App from './Components';
 import Home from './Components/Home';

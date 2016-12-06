@@ -15,6 +15,7 @@ import {fetchUserBySessionToken} from './utils';
 init({
   appId: process.env.LEANCLOUD_APP_ID,
   appKey: process.env.LEANCLOUD_APP_KEY,
+  region: process.env.LEANCLOUD_REGION,
   masterKey: process.env.LEANCLOUD_APP_MASTER_KEY
 });
 

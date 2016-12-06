@@ -5,6 +5,23 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const isProduction = process.env['NODE_ENV'] === 'production';
 
+const envKeys = [
+  'NODE_ENV',
+  'LEANCLOUD_REGION',
+  'LEANCLOUD_APP_ID',
+  'LEANCLOUD_APP_KEY'
+];
+
+const envs = envKeys.reduce((envs, key) => {
+  const env = process.env[key];
+
+  if (env) {
+    return Object.assign({}, envs, {[key]: JSON.stringify(env)});
+  } else {
+    throw new Error(`Environment variable ${key} shouldn't be ${env}`);
+  }
+}, {});
+
 const commonLoaders = [{
   test: /\.js$/,
   loader: 'babel-loader',
@@ -36,12 +53,11 @@ module.exports = [{
       loader: 'json-loader'
     }])
   },
-  plugins: commonPlugins.concat(isProduction ? [
+  plugins: commonPlugins.concat([
     new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    }),
+      'process.env': envs
+    })
+  ]).concat(isProduction ? [
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(true),
     new webpack.optimize.UglifyJsPlugin()
